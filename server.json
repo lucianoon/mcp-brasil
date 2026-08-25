@@ -1,0 +1,40 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.lucianoon/mcp-dados-br",
+  "title": "MCP Dados Brasil",
+  "description": "Servidor MCP com dados públicos brasileiros: IBGE/SIDRA, Banco Central (SGS, PTAX, Focus), INMET, Câmara dos Deputados e Senado Federal.",
+  "repository": {
+    "url": "https://github.com/lucianoon/mcp-dados-br",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/lucianoon/mcp-dados-br",
+  "version": "0.5.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "mcp-dados-br",
+      "version": "0.5.1",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "INMET_TOKEN",
+          "description": "Token opcional do INMET para dados horários observados",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "MCP_LOG_LEVEL",
+          "description": "Nível de log em stderr (DEBUG, INFO, WARNING)",
+          "format": "string",
+          "default": "WARNING",
+          "isRequired": false
+        }
+      ]
+    }
+  ]
+}

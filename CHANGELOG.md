@@ -11,6 +11,14 @@ e versionamento semântico.
 - Busca no Diário Oficial da União (aguardando API pública estável)
 - Resultados eleitorais do TSE
 
+## [0.5.1] — 2026-08-25
+
+### Adicionado
+
+- `server.json` para o MCP Registry oficial e `smithery.yaml` para a Smithery
+- Workflow publica automaticamente no MCP Registry após o deploy no PyPI
+- Marcador de verificação de propriedade no README (`mcp-name`)
+
 ## [0.5.0] — 2026-08-25
 
 ### Adicionado

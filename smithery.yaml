@@ -1,0 +1,26 @@
+# Smithery (https://smithery.ai)
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      inmetToken:
+        type: string
+        title: Token do INMET
+        description: Token opcional para dados horários observados do INMET
+      logLevel:
+        type: string
+        title: Nível de log
+        enum:
+          - DEBUG
+          - INFO
+          - WARNING
+        default: WARNING
+  commandFunction: |-
+    (config) => ({
+      command: 'uvx',
+      args: ['mcp-dados-br'],
+      env: Object.assign({},
+        config.inmetToken ? { INMET_TOKEN: config.inmetToken } : {},
+        { MCP_LOG_LEVEL: config.logLevel || 'WARNING' })
+    })

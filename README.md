@@ -7,6 +7,8 @@
 
 Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros como ferramentas para assistentes de IA: [Claude Desktop](https://claude.ai/download), Claude Code, Cursor e qualquer cliente MCP.
 
+<!-- mcp-name: io.github.lucianoon/mcp-dados-br -->
+
 ## Instalação
 
 A forma mais simples, sem instalar nada permanentemente:
