@@ -19,6 +19,9 @@ NOMES_ESPERADOS = {
     "camara_votacoes_proposicao",
     "camara_agenda",
     "camara_tramitacao",
+    "senado_senadores",
+    "senado_materias",
+    "senado_votacoes",
 }
 
 

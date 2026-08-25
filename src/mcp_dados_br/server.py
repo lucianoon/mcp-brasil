@@ -5,15 +5,16 @@ from collections.abc import Awaitable, Callable
 
 from mcp.server import MCPServer
 
-from mcp_dados_br.tools import bcb, camara, ibge, inmet
+from mcp_dados_br.tools import bcb, camara, ibge, inmet, senado
 
 _INSTRUCTIONS = """\
 Servidor de dados públicos brasileiros. Use as ferramentas para responder
 perguntas sobre estatísticas do IBGE (população, PIB), indicadores econômicos
 do Banco Central (Selic, IPCA, câmbio PTAX, expectativas do boletim Focus),
-estações meteorológicas do INMET e atividade legislativa da Câmara dos
-Deputados. Todas as respostas são texto em português brasileiro pronto para
-uso. Prefira sempre as ferramentas específicas antes da genérica ibge_sidra.
+estações meteorológicas do INMET, atividade legislativa da Câmara dos
+Deputados e do Senado Federal (senadores, matérias e votações). Todas as
+respostas são texto em português brasileiro pronto para uso. Prefira sempre
+as ferramentas específicas antes da genérica ibge_sidra.
 """
 
 
@@ -36,6 +37,9 @@ def create_server() -> MCPServer:
         camara.camara_votacoes_proposicao,
         camara.camara_agenda,
         camara.camara_tramitacao,
+        senado.senado_senadores,
+        senado.senado_materias,
+        senado.senado_votacoes,
     ]
     for tool in tools:
         mcp.tool()(tool)

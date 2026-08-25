@@ -11,6 +11,22 @@ e versionamento semântico.
 - Busca no Diário Oficial da União (aguardando API pública estável)
 - Resultados eleitorais do TSE
 
+## [0.5.0] — 2026-08-25
+
+### Adicionado
+
+- Módulo Senado Federal sobre a API LegisSaber:
+  `senado_senadores` (81 senadores, filtros por UF e nome),
+  `senado_materias` (pesquisa por sigla, ano e palavras-chave) e
+  `senado_votacoes` (placar nominal e resultado por sessão)
+
+### Adotado do benchmark DeHor Labs
+
+- Badges de CI/Python/licença no README
+- `CHANGELOG.md` (este arquivo)
+- Logging opcional em stderr via `MCP_LOG_LEVEL`
+- `CONTRIBUTING.md` e templates de issue
+
 ## [0.4.0] — 2026-08-25
 
 ### Adicionado

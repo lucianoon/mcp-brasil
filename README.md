@@ -14,6 +14,7 @@ Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros
 | Banco Central | `bcb_serie`, `bcb_cambio`, `bcb_moedas`, `bcb_focus` | Séries SGS com atalhos nomeados (`selic`, `ipca`, `cdi`...), cotações PTAX, lista de moedas e expectativas do Boletim Focus |
 | INMET | `inmet_estacoes`, `inmet_dados` | Lista de estações meteorológicas e dados horários observados (dados observacionais exigem token) |
 | Câmara dos Deputados | `camara_deputados`, `camara_detalhes_deputado`, `camara_proposicoes`, `camara_votacoes_proposicao`, `camara_agenda`, `camara_tramitacao` | Deputados, proposições, votações, agenda e tramitações |
+| Senado Federal | `senado_senadores`, `senado_materias`, `senado_votacoes` | Senadores em exercício, matérias legislativas e votações nominais com placar |
 
 Todas as fontes são APIs oficiais abertas — nenhuma chave de API necessária,
 exceto os dados horários do INMET (veja abaixo).
@@ -101,6 +102,8 @@ Depois de configurar, pergunte diretamente ao assistente:
 - "Como está o dólar PTAX nos últimos dias?"
 - "Busque projetos de lei de 2025 sobre saúde mental"
 - "O que está na agenda da Câmara esta semana?"
+- "Como o Senado votou a PEC X? Qual o placar?"
+- "Quem são os senadores de Minas Gerais?"
 - "Quais estações automáticas do INMET existem no Amazonas?"
 
 ## Desenvolvimento
@@ -127,7 +130,8 @@ src/mcp_dados_br/
     ├── ibge.py      # SIDRA v3 + localidades v1
     ├── bcb.py       # SGS + Olinda (PTAX e Boletim Focus)
     ├── inmet.py     # Estações e dados observacionais
-    └── camara.py    # Dados Abertos da Câmara v2
+    ├── camara.py    # Dados Abertos da Câmara v2
+    └── senado.py    # Dados Abertos do Senado (LegisSaber)
 ```
 
 - Transporte stdio (padrão MCP desktop)
