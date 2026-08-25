@@ -52,7 +52,7 @@ async def test_bcb_serie_formata_registros() -> None:
             ],
         )
     )
-    saida = await bcb.bcb_serie(433, "2026-06-01", "2026-07-31")
+    saida = await bcb.bcb_serie(codigo=433, data_inicial="2026-06-01", data_final="2026-07-31")
     assert "Série 433:" in saida
     assert "01/06/2026: 0.24" in saida
     assert "01/07/2026: 0.17" in saida
@@ -60,7 +60,27 @@ async def test_bcb_serie_formata_registros() -> None:
 
 async def test_bcb_serie_periodo_invalido() -> None:
     with pytest.raises(ValueError, match="anterior"):
-        await bcb.bcb_serie(433, "2026-07-01", "2026-06-01")
+        await bcb.bcb_serie(codigo=433, data_inicial="2026-07-01", data_final="2026-06-01")
+
+
+async def test_bcb_serie_sem_indicador_nem_codigo() -> None:
+    with pytest.raises(ValueError, match="atalhos"):
+        await bcb.bcb_serie()
+
+
+async def test_bcb_serie_indicador_desconhecido() -> None:
+    with pytest.raises(ValueError, match="Indicador desconhecido"):
+        await bcb.bcb_serie(indicador="dolar_futuro")
+
+
+@respx.mock
+async def test_bcb_serie_atalho_ipca_resolve_codigo_433() -> None:
+    route = respx.get("https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados").mock(
+        return_value=httpx.Response(200, json=[{"data": "01/07/2026", "valor": "0.17"}])
+    )
+    saida = await bcb.bcb_serie(indicador="IPCA", data_inicial="2026-07-01")
+    assert "/bcdata.sgs.433/" in str(route.calls.last.request.url)
+    assert "01/07/2026: 0.17" in saida
 
 
 @respx.mock

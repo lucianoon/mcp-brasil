@@ -15,6 +15,16 @@ _FOCUS_ENTIDADES = {
     "cambio": ("ExpectativasMercadoTop5Anuais", "Indicador eq 'Câmbio'"),
 }
 
+_INDICADORES_SGS = {
+    "selic": 1178,
+    "cdi": 4390,
+    "ipca": 433,
+    "ipca_12m": 13522,
+    "igpm": 189,
+    "inpc": 206,
+    "salario_minimo": 36,
+}
+
 
 def _data_sgs(iso: str) -> str:
     ano, mes, dia = iso.split("-")
@@ -27,19 +37,36 @@ def _data_ptax(iso: str) -> str:
 
 
 async def bcb_serie(
-    codigo: int,
+    indicador: str | None = None,
     data_inicial: str | None = None,
     data_final: str | None = None,
+    codigo: int | None = None,
 ) -> str:
     """Consulta séries temporais do Sistema Gerenciador de Séries (SGS) do Banco Central.
 
     Args:
-        codigo: Código da série SGS. Exemplos: 1178 (Selic meta), 433 (IPCA mensal),
-            13522 (IPCA acumulado em 12 meses), 4390 (CDI), 36 (salário mínimo),
-            189 (IGP-M), 206 (INPC). Catálogo: https://www3.bcb.gov.br/sgspub/
+        indicador: Atalho nomeado, um de: "selic", "cdi", "ipca", "ipca_12m",
+            "igpm", "inpc" ou "salario_minimo". Prefira este parâmetro.
         data_inicial: Data inicial ISO "AAAA-MM-DD". Padrão: últimos 90 dias.
         data_final: Data final ISO "AAAA-MM-DD". Padrão: hoje.
+        codigo: Código bruto da série SGS para séries sem atalho
+            (catálogo: https://www3.bcb.gov.br/sgspub/). Ignorado se indicador for informado.
     """
+    if indicador:
+        chave = indicador.strip().casefold()
+        codigo_resolvido = _INDICADORES_SGS.get(chave)
+        if codigo_resolvido is None:
+            validos = ", ".join(sorted(_INDICADORES_SGS))
+            raise ValueError(
+                f"Indicador desconhecido: {indicador!r}. Válidos: {validos}"
+            )
+        codigo = codigo_resolvido
+    elif codigo is None:
+        atalhos = ", ".join(sorted(_INDICADORES_SGS))
+        raise ValueError(
+            "Informe o parâmetro indicador (atalhos: "
+            f"{atalhos}) ou o código bruto da série SGS."
+        )
     fim = date.fromisoformat(data_final) if data_final else date.today()
     inicio = date.fromisoformat(data_inicial) if data_inicial else fim - timedelta(days=90)
     if inicio > fim:

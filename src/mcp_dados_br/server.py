@@ -33,6 +33,7 @@ def create_server() -> MCPServer:
         camara.camara_proposicoes,
         camara.camara_votacoes_proposicao,
         camara.camara_agenda,
+        camara.camara_tramitacao,
     ]
     for tool in tools:
         mcp.tool()(tool)

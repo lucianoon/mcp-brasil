@@ -7,9 +7,9 @@ Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros
 | Fonte | Tools | Descrição |
 |---|---|---|
 | IBGE/SIDRA | `ibge_populacao`, `ibge_pib`, `ibge_municipios`, `ibge_sidra` | População, PIB, busca de municípios e consulta genérica a qualquer agregado SIDRA |
-| Banco Central | `bcb_serie`, `bcb_cambio`, `bcb_moedas`, `bcb_focus` | Séries temporais SGS (Selic, IPCA...), cotações PTAX, lista de moedas e expectativas do Boletim Focus |
+| Banco Central | `bcb_serie`, `bcb_cambio`, `bcb_moedas`, `bcb_focus` | Séries SGS com atalhos nomeados (`selic`, `ipca`, `cdi`...), cotações PTAX, lista de moedas e expectativas do Boletim Focus |
 | INMET | `inmet_estacoes`, `inmet_dados` | Lista de estações meteorológicas e dados horários observados (dados observacionais exigem token) |
-| Câmara dos Deputados | `camara_deputados`, `camara_detalhes_deputado`, `camara_proposicoes`, `camara_votacoes_proposicao`, `camara_agenda` | Deputados, proposições, votações e agenda de eventos |
+| Câmara dos Deputados | `camara_deputados`, `camara_detalhes_deputado`, `camara_proposicoes`, `camara_votacoes_proposicao`, `camara_agenda`, `camara_tramitacao` | Deputados, proposições, votações, agenda e tramitações |
 
 Todas as fontes são APIs oficiais abertas — nenhuma chave de API necessária,
 exceto os dados horários do INMET (veja abaixo).
@@ -79,6 +79,13 @@ MCP_TRANSPORTE=streamable-http MCP_PORTA=8000 mcp-dados-br
 Aponte clientes para `http://localhost:8000/mcp`. Útil para Docker ou
 compartilhar o servidor na rede local.
 
+### Docker
+
+```bash
+docker build -t mcp-dados-br .
+docker run -p 8000:8000 -e INMET_TOKEN=seu-token mcp-dados-br
+```
+
 ## Exemplos de uso
 
 Depois de configurar, pergunte diretamente ao assistente:
@@ -125,6 +132,7 @@ src/mcp_dados_br/
 
 - [x] v0.2 — INMET (estações + observacional com token) e Boletim Focus
 - [x] v0.3 — Agenda da Câmara, transporte streamable-http e testes de integração agendados no CI
+- [x] v0.4 — Tramitações, atalhos nomeados no SGS, imagem Docker
 - [ ] Publicação no PyPI (`uvx mcp-dados-br`)
 - [ ] DOU: busca no Diário Oficial da União (aguardando API pública estável)
 - [ ] TSE: resultados eleitorais

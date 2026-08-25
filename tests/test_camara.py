@@ -146,3 +146,34 @@ async def test_camara_agenda_vazia() -> None:
     respx.get(f"{BASE}/eventos").mock(return_value=httpx.Response(200, json={"dados": []}))
     saida = await camara.camara_agenda()
     assert saida == "Nenhum evento agendado na Câmara para os próximos dias."
+
+
+@respx.mock
+async def test_camara_tramitacao_exibe_ultimas_movimentacoes() -> None:
+    respx.get(f"{BASE}/proposicoes/2482470/tramitacoes").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "dados": [
+                    {
+                        "dataHora": "2025-02-03T15:58",
+                        "siglaOrgao": "MESA",
+                        "descricaoTramitacao": "Apresentação de Proposição",
+                        "descricaoSituacao": "Pronta para Pauta",
+                    },
+                ]
+            },
+        )
+    )
+    saida = await camara.camara_tramitacao(2482470)
+    assert "Tramitação da proposição 2482470" in saida
+    assert "2025-02-03 15:58 — MESA: Apresentação de Proposição [Pronta para Pauta]" in saida
+
+
+@respx.mock
+async def test_camara_tramitacao_vazia() -> None:
+    respx.get(f"{BASE}/proposicoes/1/tramitacoes").mock(
+        return_value=httpx.Response(200, json={"dados": []})
+    )
+    saida = await camara.camara_tramitacao(1)
+    assert saida == "Nenhuma tramitação encontrada para a proposição 1."

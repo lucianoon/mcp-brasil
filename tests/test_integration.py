@@ -30,7 +30,7 @@ async def test_ibge_municipios_online() -> None:
 
 
 async def test_bcb_serie_ipca_online() -> None:
-    saida = await bcb.bcb_serie(433)
+    saida = await bcb.bcb_serie(indicador="ipca")
     assert "Série 433" in saida
 
 

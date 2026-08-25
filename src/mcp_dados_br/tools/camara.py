@@ -157,3 +157,29 @@ async def camara_agenda(dias: int = 3) -> str:
             f"{inicio} — {_truncar(e.get('descricao'), 100)}{situacao_txt} (id {e['id']})"
         )
     return "\n".join(linhas)
+
+
+async def camara_tramitacao(id_proposicao: int, ultimas: int = 10) -> str:
+    """Histórico de tramitação de uma proposição na Câmara.
+
+    Args:
+        id_proposicao: ID numérico da proposição (obtido via camara_proposicoes).
+        ultimas: Quantidade de movimentações recentes a exibir (padrão 10).
+    """
+    dados: dict[str, Any] = await get_json(
+        f"{_BASE_URL}/proposicoes/{id_proposicao}/tramitacoes",
+        params={"itens": max(ultimas * 2, 20)},
+    )
+    tramitacoes = dados.get("dados") or []
+    if not tramitacoes:
+        return f"Nenhuma tramitação encontrada para a proposição {id_proposicao}."
+    recentes = tramitacoes[-ultimas:]
+    linhas = [f"Tramitação da proposição {id_proposicao} ({len(tramitacoes)} movimentações):"]
+    for t in recentes:
+        quando = str(t.get("dataHora", "?")).replace("T", " ")[:16]
+        orgao = t.get("siglaOrgao") or "?"
+        descricao = t.get("descricaoTramitacao") or t.get("texto") or "sem descrição"
+        situacao = t.get("descricaoSituacao")
+        situacao_txt = f" [{situacao}]" if situacao else ""
+        linhas.append(f"{quando} — {orgao}: {_truncar(descricao, 100)}{situacao_txt}")
+    return "\n".join(linhas)

@@ -64,7 +64,7 @@ async def test_get_json_esgota_tentativas() -> None:
     )
     with pytest.raises(ApiError, match="Falha ao consultar"):
         await get_json("https://api.exemplo.test/offline")
-    assert route.call_count == 2
+    assert route.call_count == 3
 
 
 def test_cache_key_com_params_ordenados() -> None:

@@ -7,7 +7,8 @@ import httpx
 from mcp_dados_br.cache import TTLCache
 
 _USER_AGENT = "mcp-dados-br/0.1 (+https://github.com/lucianoon/mcp-dados-br)"
-_TIMEOUT = httpx.Timeout(15.0, connect=5.0)
+_TIMEOUT = httpx.Timeout(30.0, connect=5.0)
+_RETRYS_DELAY = [0.5, 1.5]
 
 _cache = TTLCache(ttl_seconds=600.0)
 _client: httpx.AsyncClient | None = None
@@ -58,7 +59,7 @@ async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
     request_url = f"{url}?{_query_string(params)}" if params else url
     client = await get_client()
     last_error: Exception | None = None
-    for attempt in range(2):
+    for attempt in range(len(_RETRYS_DELAY) + 1):
         try:
             response = await client.get(request_url)
             if response.status_code >= 400:
@@ -72,8 +73,8 @@ async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
             return data
         except httpx.TransportError as exc:
             last_error = exc
-            if attempt == 0:
-                await asyncio.sleep(0.5)
+            if attempt < len(_RETRYS_DELAY):
+                await asyncio.sleep(_RETRYS_DELAY[attempt])
     raise ApiError(f"Falha ao consultar {url}: {last_error}") from last_error
 
 
