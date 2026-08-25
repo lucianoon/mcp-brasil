@@ -1,0 +1,42 @@
+from collections.abc import Awaitable, Callable
+
+from mcp.server import MCPServer
+
+from mcp_brasil.tools import bcb, camara, ibge
+
+_INSTRUCTIONS = """\
+Servidor de dados públicos brasileiros. Use as ferramentas para responder
+perguntas sobre estatísticas do IBGE (população, PIB), indicadores econômicos
+do Banco Central (Selic, IPCA, câmbio PTAX) e atividade legislativa da Câmara
+dos Deputados. Todas as respostas são texto em português brasileiro pronto
+para uso. Prefira sempre as ferramentas específicas antes da genérica
+ibge_sidra.
+"""
+
+
+def create_server() -> MCPServer:
+    mcp = MCPServer("mcp-brasil", instructions=_INSTRUCTIONS)
+    tools: list[Callable[..., Awaitable[str]]] = [
+        ibge.ibge_populacao,
+        ibge.ibge_pib,
+        ibge.ibge_municipios,
+        ibge.ibge_sidra,
+        bcb.bcb_serie,
+        bcb.bcb_cambio,
+        bcb.bcb_moedas,
+        camara.camara_deputados,
+        camara.camara_detalhes_deputado,
+        camara.camara_proposicoes,
+        camara.camara_votacoes_proposicao,
+    ]
+    for tool in tools:
+        mcp.tool()(tool)
+    return mcp
+
+
+def main() -> None:
+    create_server().run()
+
+
+if __name__ == "__main__":
+    main()

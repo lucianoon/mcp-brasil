@@ -1,0 +1,118 @@
+import httpx
+import respx
+
+from mcp_brasil.tools import camara
+
+BASE = "https://dadosabertos.camara.leg.br/api/v2"
+
+
+@respx.mock
+async def test_camara_deputados_formata_saida() -> None:
+    respx.get(f"{BASE}/deputados").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "dados": [
+                    {
+                        "id": 221328,
+                        "nome": "Adilson Barroso",
+                        "siglaPartido": "PL",
+                        "siglaUf": "SP",
+                    }
+                ]
+            },
+        )
+    )
+    saida = await camara.camara_deputados(uf="sp")
+    requisicao_url = str(respx.calls.last.request.url)
+    assert "siglaUf=SP" in requisicao_url
+    assert saida == "221328 — Adilson Barroso (PL/SP)"
+
+
+@respx.mock
+async def test_camara_deputados_sem_resultado() -> None:
+    respx.get(f"{BASE}/deputados").mock(return_value=httpx.Response(200, json={"dados": []}))
+    saida = await camara.camara_deputados(nome="inexistente")
+    assert saida == "Nenhum deputado encontrado para os filtros informados."
+
+
+@respx.mock
+async def test_camara_detalhes_deputado() -> None:
+    respx.get(f"{BASE}/deputados/221328").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "dados": {
+                    "nomeCivil": "ADILSON BARROSO OLIVEIRA",
+                    "ultimoStatus": {
+                        "nomeEleitoral": "Adilson Barroso",
+                        "situacao": "Exercício",
+                        "siglaPartido": "PL",
+                        "siglaUf": "SP",
+                        "email": None,
+                        "urlFoto": "https://foto.test/221328.jpg",
+                        "gabinete": {
+                            "predio": "4", "sala": "603", "andar": "6", "telefone": "3215-5603",
+                        },
+                    },
+                }
+            },
+        )
+    )
+    saida = await camara.camara_detalhes_deputado(221328)
+    assert "Nome civil: ADILSON BARROSO OLIVEIRA" in saida
+    assert "E-mail: não informado" in saida
+    assert "sala 603" in saida
+
+
+@respx.mock
+async def test_camara_proposicoes_trunca_ementa() -> None:
+    ementa_longa = "x" * 300
+    respx.get(f"{BASE}/proposicoes").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "dados": [
+                    {
+                        "id": 2482470,
+                        "siglaTipo": "PL",
+                        "numero": 130,
+                        "ano": 2025,
+                        "ementa": ementa_longa,
+                    }
+                ]
+            },
+        )
+    )
+    saida = await camara.camara_proposicoes(ano=2025, palavras_chave="saude")
+    assert saida.startswith("2482470 — PL 130/2025 — ")
+    assert saida.endswith("...")
+    assert len(saida) < 200
+
+
+@respx.mock
+async def test_camara_votacoes_com_resultados() -> None:
+    respx.get(f"{BASE}/votacoes").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "dados": [
+                    {
+                        "id": "2642749-7",
+                        "data": "2026-08-13",
+                        "aprovacao": 1,
+                        "descricao": "Aprovado por unanimidade.",
+                    }
+                ]
+            },
+        )
+    )
+    saida = await camara.camara_votacoes_proposicao(2642749)
+    assert "2642749-7 — 2026-08-13 — Aprovado por unanimidade." in saida
+
+
+@respx.mock
+async def test_camara_votacoes_sem_resultados() -> None:
+    respx.get(f"{BASE}/votacoes").mock(return_value=httpx.Response(200, json={"dados": []}))
+    saida = await camara.camara_votacoes_proposicao(999)
+    assert saida == "Nenhuma votação encontrada para a proposição 999."

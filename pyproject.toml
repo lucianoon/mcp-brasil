@@ -1,0 +1,58 @@
+[project]
+name = "mcp-brasil"
+version = "0.1.0"
+description = "Servidor MCP com dados públicos brasileiros: IBGE, Banco Central e Câmara dos Deputados"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [{ name = "Luciano" }]
+keywords = ["mcp", "dados-abertos", "ibge", "banco-central", "camara"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: Portuguese (Brazilian)",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "httpx>=0.28",
+    "mcp>=1.12",
+    "pydantic>=2.10",
+]
+
+[project.urls]
+Repository = "https://github.com/lucianoon/mcp-brasil"
+
+[project.scripts]
+mcp-brasil = "mcp_brasil.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.25",
+    "respx>=0.22",
+    "ruff>=0.9",
+    "mypy>=1.14",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "PTH"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcp_brasil"]
