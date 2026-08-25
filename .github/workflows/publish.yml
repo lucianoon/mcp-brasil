@@ -56,6 +56,8 @@ jobs:
           name: dist
           path: dist/
 
-      # Sem password e sem secrets: a autenticacao e feita via OIDC do GitHub.
+      # Usa PYPI_API_TOKEN se configurado; sem secret, cai para Trusted Publishing (OIDC).
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
