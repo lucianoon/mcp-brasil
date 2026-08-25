@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 import httpx
 import pytest
 import respx
@@ -60,8 +62,10 @@ async def test_inmet_dados_sem_token_orienta_usuario(monkeypatch: pytest.MonkeyP
 @respx.mock
 async def test_inmet_dados_com_token_formata_registros(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("INMET_TOKEN", "segredo")
+    hoje = date.today()
+    ontem = hoje - timedelta(days=1)
     respx.get(
-        "https://apitempo.inmet.gov.br/token/estacao/2026-08-23/2026-08-24/A001/segredo"
+        f"https://apitempo.inmet.gov.br/token/estacao/{ontem}/{hoje}/A001/segredo"
     ).mock(
         return_value=httpx.Response(
             200,
