@@ -1,0 +1,23 @@
+name: Nova fonte de dados ou melhoria
+description: Sugerir uma API pública brasileira nova ou uma evolução
+labels: ["melhoria"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Que pergunta isso ajudaria a responder?
+      placeholder: ex.: "Como ficou o resultado da eleição em X?"
+    validations:
+      required: true
+  - type: input
+    id: api
+    attributes:
+      label: API oficial envolvida (se souber)
+      placeholder: URL da documentação
+  - type: checkboxes
+    id: requisitos
+    attributes:
+      label: Requisitos do projeto
+      options:
+        - label: A API é oficial/governamental e aberta (sem chave obrigatória)
+          required: true

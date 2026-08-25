@@ -16,6 +16,20 @@ async def test_get_json_sucesso() -> None:
 
 
 @respx.mock
+async def test_get_json_registra_aviso_no_retry(caplog: pytest.LogCaptureFixture) -> None:
+    respx.get("https://api.exemplo.test/flaky-log").mock(
+        side_effect=[
+            httpx.ConnectTimeout("timeout"),
+            httpx.Response(200, json={}),
+        ]
+    )
+    with caplog.at_level("WARNING", logger="mcp_dados_br.http"):
+        await get_json("https://api.exemplo.test/flaky-log")
+    avisos = [r for r in caplog.records if "Tentativa 1 falhou" in r.getMessage()]
+    assert len(avisos) == 1
+
+
+@respx.mock
 async def test_get_json_usa_cache_na_segunda_chamada() -> None:
     route = respx.get("https://api.exemplo.test/dados").mock(
         return_value=httpx.Response(200, json={"n": 42})

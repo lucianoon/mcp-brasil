@@ -1,10 +1,13 @@
 import asyncio
+import logging
 from typing import Any
 from urllib.parse import quote
 
 import httpx
 
 from mcp_dados_br.cache import TTLCache
+
+logger = logging.getLogger(__name__)
 
 _USER_AGENT = "mcp-dados-br/0.1 (+https://github.com/lucianoon/mcp-dados-br)"
 _TIMEOUT = httpx.Timeout(30.0, connect=5.0)
@@ -57,6 +60,7 @@ async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
         return cached
 
     request_url = f"{url}?{_query_string(params)}" if params else url
+    logger.debug("GET %s", request_url)
     client = await get_client()
     last_error: Exception | None = None
     for attempt in range(len(_RETRYS_DELAY) + 1):
@@ -73,6 +77,7 @@ async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
             return data
         except httpx.TransportError as exc:
             last_error = exc
+            logger.warning("Tentativa %d falhou para %s: %r", attempt + 1, url, exc)
             if attempt < len(_RETRYS_DELAY):
                 await asyncio.sleep(_RETRYS_DELAY[attempt])
     raise ApiError(f"Falha ao consultar {url}: {last_error}") from last_error

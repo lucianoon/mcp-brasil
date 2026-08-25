@@ -1,4 +1,6 @@
+import logging
 import os
+import sys
 from collections.abc import Awaitable, Callable
 
 from mcp.server import MCPServer
@@ -40,7 +42,17 @@ def create_server() -> MCPServer:
     return mcp
 
 
+def _configurar_logging() -> None:
+    nivel = os.environ.get("MCP_LOG_LEVEL", "WARNING").upper()
+    logging.basicConfig(
+        level=getattr(logging, nivel, logging.WARNING),
+        stream=sys.stderr,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+
+
 def main() -> None:
+    _configurar_logging()
     servidor = create_server()
     transporte = os.environ.get("MCP_TRANSPORTE", "stdio")
     if transporte == "streamable-http":

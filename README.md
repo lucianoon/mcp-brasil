@@ -1,5 +1,9 @@
 # mcp-dados-br
 
+[![CI](https://github.com/lucianoon/mcp-dados-br/actions/workflows/ci.yml/badge.svg)](https://github.com/lucianoon/mcp-dados-br/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org)
+[![Licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-green.svg)](LICENSE)
+
 Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros como ferramentas para assistentes de IA: [Claude Desktop](https://claude.ai/download), Claude Code, Cursor e qualquer cliente MCP.
 
 ## Ferramentas disponíveis
@@ -108,6 +112,9 @@ uv run pytest -m integration   # consulta as APIs reais
 uv run ruff check .
 uv run mypy src
 ```
+
+Logs de depuração: configure `MCP_LOG_LEVEL=DEBUG` no cliente MCP.
+Para contribuir, leia o [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Arquitetura
 
