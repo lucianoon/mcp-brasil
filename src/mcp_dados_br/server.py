@@ -1,3 +1,4 @@
+import os
 from collections.abc import Awaitable, Callable
 
 from mcp.server import MCPServer
@@ -31,6 +32,7 @@ def create_server() -> MCPServer:
         camara.camara_detalhes_deputado,
         camara.camara_proposicoes,
         camara.camara_votacoes_proposicao,
+        camara.camara_agenda,
     ]
     for tool in tools:
         mcp.tool()(tool)
@@ -38,7 +40,13 @@ def create_server() -> MCPServer:
 
 
 def main() -> None:
-    create_server().run()
+    servidor = create_server()
+    transporte = os.environ.get("MCP_TRANSPORTE", "stdio")
+    if transporte == "streamable-http":
+        porta = int(os.environ.get("MCP_PORTA", "8000"))
+        servidor.run(transport="streamable-http", port=porta)
+    else:
+        servidor.run()
 
 
 if __name__ == "__main__":

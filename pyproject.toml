@@ -1,6 +1,6 @@
 [project]
 name = "mcp-dados-br"
-version = "0.2.1"
+version = "0.3.0"
 description = "Servidor MCP com dados públicos brasileiros: IBGE, Banco Central e Câmara dos Deputados"
 readme = "README.md"
 license = "MIT"
@@ -41,6 +41,10 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+addopts = "-m 'not integration'"
+markers = [
+    "integration: testes que consultam as APIs reais (rodar com -m integration)",
+]
 
 [tool.ruff]
 target-version = "py312"

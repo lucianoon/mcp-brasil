@@ -9,7 +9,7 @@ Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros
 | IBGE/SIDRA | `ibge_populacao`, `ibge_pib`, `ibge_municipios`, `ibge_sidra` | População, PIB, busca de municípios e consulta genérica a qualquer agregado SIDRA |
 | Banco Central | `bcb_serie`, `bcb_cambio`, `bcb_moedas`, `bcb_focus` | Séries temporais SGS (Selic, IPCA...), cotações PTAX, lista de moedas e expectativas do Boletim Focus |
 | INMET | `inmet_estacoes`, `inmet_dados` | Lista de estações meteorológicas e dados horários observados (dados observacionais exigem token) |
-| Câmara dos Deputados | `camara_deputados`, `camara_detalhes_deputado`, `camara_proposicoes`, `camara_votacoes_proposicao` | Deputados, proposições legislativas e votações |
+| Câmara dos Deputados | `camara_deputados`, `camara_detalhes_deputado`, `camara_proposicoes`, `camara_votacoes_proposicao`, `camara_agenda` | Deputados, proposições, votações e agenda de eventos |
 
 Todas as fontes são APIs oficiais abertas — nenhuma chave de API necessária,
 exceto os dados horários do INMET (veja abaixo).
@@ -66,7 +66,18 @@ ambiente no cliente MCP:
 }
 ```
 
-Sem o token, as demais 13 ferramentas funcionam normalmente.
+Sem o token, as demais 14 ferramentas funcionam normalmente.
+
+## Transporte streamable-http
+
+Além do stdio padrão, o servidor pode rodar em modo HTTP remoto:
+
+```bash
+MCP_TRANSPORTE=streamable-http MCP_PORTA=8000 mcp-dados-br
+```
+
+Aponte clientes para `http://localhost:8000/mcp`. Útil para Docker ou
+compartilhar o servidor na rede local.
 
 ## Exemplos de uso
 
@@ -78,13 +89,15 @@ Depois de configurar, pergunte diretamente ao assistente:
 - "Qual a população de São Paulo em 2022? E o PIB?"
 - "Como está o dólar PTAX nos últimos dias?"
 - "Busque projetos de lei de 2025 sobre saúde mental"
+- "O que está na agenda da Câmara esta semana?"
 - "Quais estações automáticas do INMET existem no Amazonas?"
 
 ## Desenvolvimento
 
 ```bash
 uv sync --dev
-uv run pytest
+uv run pytest              # suíte unitária (mocks)
+uv run pytest -m integration   # consulta as APIs reais
 uv run ruff check .
 uv run mypy src
 ```
@@ -111,10 +124,10 @@ src/mcp_dados_br/
 ## Roadmap
 
 - [x] v0.2 — INMET (estações + observacional com token) e Boletim Focus
+- [x] v0.3 — Agenda da Câmara, transporte streamable-http e testes de integração agendados no CI
+- [ ] Publicação no PyPI (`uvx mcp-dados-br`)
 - [ ] DOU: busca no Diário Oficial da União (aguardando API pública estável)
 - [ ] TSE: resultados eleitorais
-- [ ] Publicação no PyPI (`uvx mcp-dados-br`)
-- [ ] Transporte streamable-http opcional
 
 ## Licença
 

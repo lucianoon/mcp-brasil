@@ -116,3 +116,33 @@ async def test_camara_votacoes_sem_resultados() -> None:
     respx.get(f"{BASE}/votacoes").mock(return_value=httpx.Response(200, json={"dados": []}))
     saida = await camara.camara_votacoes_proposicao(999)
     assert saida == "Nenhuma votação encontrada para a proposição 999."
+
+
+@respx.mock
+async def test_camara_agenda_formata_eventos() -> None:
+    respx.get(f"{BASE}/eventos").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "dados": [
+                    {
+                        "id": 82911,
+                        "dataHoraInicio": "2026-08-25T14:00",
+                        "descricao": "Audiência pública sobre universidades",
+                        "situacao": "Convocada",
+                    }
+                ]
+            },
+        )
+    )
+    saida = await camara.camara_agenda(dias=3)
+    assert "Agenda da Câmara (" in saida
+    assert "2026-08-25 14:00 — Audiência pública sobre universidades [Convocada]" in saida
+    assert "(id 82911)" in saida
+
+
+@respx.mock
+async def test_camara_agenda_vazia() -> None:
+    respx.get(f"{BASE}/eventos").mock(return_value=httpx.Response(200, json={"dados": []}))
+    saida = await camara.camara_agenda()
+    assert saida == "Nenhum evento agendado na Câmara para os próximos dias."

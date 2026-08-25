@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from typing import Any
 
 from mcp_dados_br.http import get_json
@@ -125,4 +126,34 @@ async def camara_votacoes_proposicao(id_proposicao: int) -> str:
         f"{_truncar(v.get('descricao') or v.get('aprovacao') or 'sem descrição')}"
         for v in votacoes
     ]
+    return "\n".join(linhas)
+
+
+async def camara_agenda(dias: int = 3) -> str:
+    """Agenda de eventos da Câmara dos Deputados (sessões, audiências públicas).
+
+    Args:
+        dias: Quantidade de dias a partir de hoje (padrão 3, máximo 14).
+    """
+    hoje = date.today()
+    fim = hoje + timedelta(days=min(max(dias, 1), 14))
+    dados: dict[str, Any] = await get_json(
+        f"{_BASE_URL}/eventos",
+        params={
+            "dataInicio": hoje.isoformat(),
+            "dataFim": fim.isoformat(),
+            "itens": 30,
+        },
+    )
+    eventos = dados.get("dados") or []
+    if not eventos:
+        return "Nenhum evento agendado na Câmara para os próximos dias."
+    linhas = [f"Agenda da Câmara ({hoje} a {fim}):"]
+    for e in eventos:
+        inicio = str(e.get("dataHoraInicio", "?")).replace("T", " ")
+        situacao = e.get("situacao")
+        situacao_txt = f" [{situacao}]" if situacao else ""
+        linhas.append(
+            f"{inicio} — {_truncar(e.get('descricao'), 100)}{situacao_txt} (id {e['id']})"
+        )
     return "\n".join(linhas)
