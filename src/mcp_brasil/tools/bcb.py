@@ -4,7 +4,16 @@ from typing import Any
 from mcp_brasil.http import get_json
 
 _SGS_URL = "https://api.bcb.gov.br/dados/serie"
-_PTAX_URL = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata"
+_OLINDA_URL = "https://olinda.bcb.gov.br/olinda/servico"
+_PTAX_URL = f"{_OLINDA_URL}/PTAX/versao/v1/odata"
+_FOCUS_URL = f"{_OLINDA_URL}/Expectativas/versao/v1/odata"
+
+_FOCUS_ENTIDADES = {
+    "selic": ("ExpectativasMercadoSelic", None),
+    "ipca": ("ExpectativasMercadoTop5Inflacao12Meses", "Indicador eq 'IPCA'"),
+    "pib": ("ExpectativasMercadoTop5Anuais", "Indicador eq 'PIB Total'"),
+    "cambio": ("ExpectativasMercadoTop5Anuais", "Indicador eq 'Câmbio'"),
+}
 
 
 def _data_sgs(iso: str) -> str:
@@ -109,3 +118,76 @@ async def bcb_moedas() -> str:
     moedas = dados.get("value") or []
     linhas = [f"{m['simbolo']} — {m['nomeFormatado']}" for m in moedas]
     return "\n".join(linhas)
+
+
+def _periodo_focus(registro: dict[str, Any]) -> str:
+    if registro.get("Reuniao"):
+        return f"reunião {registro['Reuniao']}"
+    if registro.get("DataReferencia"):
+        return f"referência {registro['DataReferencia']}"
+    return "próximos 12 meses"
+
+
+def _formatar_focus(indicador: str, registros: list[dict[str, Any]]) -> str:
+    data_pesquisa = max(str(r.get("Data")) for r in registros)
+    do_dia = [r for r in registros if str(r.get("Data")) == data_pesquisa]
+
+    def mediana(r: dict[str, Any]) -> float:
+        valor = r.get("Mediana")
+        return float(valor) if valor is not None else float("inf")
+
+    ordenados = sorted(do_dia, key=mediana)
+    linhas = [
+        f"Focus BCB ({data_pesquisa}) — expectativas para {indicador.upper()}:"
+    ]
+    for r in ordenados:
+        partes = [
+            _periodo_focus(r),
+            f"mediana {r.get('Mediana')}",
+            f"média {r.get('Media')}",
+            f"mín {r.get('Minimo')}",
+            f"máx {r.get('Maximo')}",
+        ]
+        respondentes = r.get("numeroRespondentes")
+        if respondentes:
+            partes.append(f"{respondentes} analistas")
+        linhas.append(" | ".join(partes))
+    return "\n".join(linhas)
+
+
+async def bcb_focus(indicador: str = "selic") -> str:
+    """Expectativas de mercado do Boletim Focus (Boletim Focus) do Banco Central.
+
+    Mostra a projeção média dos analistas de mercado para os próximos períodos.
+
+    Args:
+        indicador: Um de: "selic", "ipca", "pib" ou "cambio".
+    """
+    chave = indicador.strip().casefold()
+    entidade_info = _FOCUS_ENTIDADES.get(chave)
+    if entidade_info is None:
+        validos = ", ".join(sorted(_FOCUS_ENTIDADES))
+        raise ValueError(f"Indicador desconhecido: {indicador!r}. Válidos: {validos}")
+    entidade, filtro_indicador = entidade_info
+    desde = (date.today() - timedelta(days=7)).isoformat()
+    filtro = f"Data ge '{desde}'"
+    if filtro_indicador:
+        filtro += f" and {filtro_indicador}"
+    dados: dict[str, Any] = await get_json(
+        f"{_FOCUS_URL}/{entidade}",
+        params={
+            "$format": "json",
+            "$filter": filtro,
+            "$orderby": "Data desc",
+            "$top": 60,
+        },
+    )
+    registros = dados.get("value") or []
+    if chave == "selic":
+        registros = [r for r in registros if r.get("baseCalculo") == 0]
+    if not registros:
+        return (
+            f"Nenhuma expectativa recente encontrada para {chave}. "
+            "O boletim Focus pode não ter sido publicado nos últimos 7 dias."
+        )
+    return _formatar_focus(chave, registros)

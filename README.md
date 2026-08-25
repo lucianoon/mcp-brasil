@@ -7,10 +7,12 @@ Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros
 | Fonte | Tools | Descrição |
 |---|---|---|
 | IBGE/SIDRA | `ibge_populacao`, `ibge_pib`, `ibge_municipios`, `ibge_sidra` | População, PIB, busca de municípios e consulta genérica a qualquer agregado SIDRA |
-| Banco Central | `bcb_serie`, `bcb_cambio`, `bcb_moedas` | Séries temporais SGS (Selic, IPCA, CDI...), cotações PTAX e lista de moedas |
+| Banco Central | `bcb_serie`, `bcb_cambio`, `bcb_moedas`, `bcb_focus` | Séries temporais SGS (Selic, IPCA...), cotações PTAX, lista de moedas e expectativas do Boletim Focus |
+| INMET | `inmet_estacoes`, `inmet_dados` | Lista de estações meteorológicas e dados horários observados (dados observacionais exigem token) |
 | Câmara dos Deputados | `camara_deputados`, `camara_detalhes_deputado`, `camara_proposicoes`, `camara_votacoes_proposicao` | Deputados, proposições legislativas e votações |
 
-Todas as fontes são APIs oficiais abertas — nenhuma chave de API necessária.
+Todas as fontes são APIs oficiais abertas — nenhuma chave de API necessária,
+exceto os dados horários do INMET (veja abaixo).
 
 ## Instalação
 
@@ -45,15 +47,38 @@ Adicione ao arquivo de configuração (`claude_desktop_config.json` ou `mcp.json
 claude mcp add mcp-brasil -- uv run --directory /caminho/para/mcp-brasil mcp-brasil
 ```
 
+## Token opcional do INMET
+
+A listagem de estações (`inmet_estacoes`) é aberta. Já os **dados horários
+observados** (`inmet_dados`) exigem um token fornecido pelo INMET — solicite em
+[portal.inmet.gov.br](https://portal.inmet.gov.br) e configure a variável de
+ambiente no cliente MCP:
+
+```json
+{
+  "mcpServers": {
+    "mcp-brasil": {
+      "command": "uv",
+      "args": ["run", "--directory", "/caminho/para/mcp-brasil", "mcp-brasil"],
+      "env": { "INMET_TOKEN": "seu-token" }
+    }
+  }
+}
+```
+
+Sem o token, as demais 13 ferramentas funcionam normalmente.
+
 ## Exemplos de uso
 
 Depois de configurar, pergunte diretamente ao assistente:
 
 - "Qual foi o IPCA dos últimos 6 meses?"
+- "O que o mercado espera para a Selic nas próximas reuniões?" (Boletim Focus)
 - "Quem são os deputados federais de Minas Gerais do partido X?"
 - "Qual a população de São Paulo em 2022? E o PIB?"
 - "Como está o dólar PTAX nos últimos dias?"
 - "Busque projetos de lei de 2025 sobre saúde mental"
+- "Quais estações automáticas do INMET existem no Amazonas?"
 
 ## Desenvolvimento
 
@@ -73,7 +98,8 @@ src/mcp_brasil/
 ├── cache.py         # Cache TTL em memória para as respostas das APIs
 └── tools/
     ├── ibge.py      # SIDRA v3 + localidades v1
-    ├── bcb.py       # SGS + Olinda/PTAX
+    ├── bcb.py       # SGS + Olinda (PTAX e Boletim Focus)
+    ├── inmet.py     # Estações e dados observacionais
     └── camara.py    # Dados Abertos da Câmara v2
 ```
 
@@ -84,8 +110,8 @@ src/mcp_brasil/
 
 ## Roadmap
 
-- [ ] INMET: dados climáticos por estação
-- [ ] DOU: busca no Diário Oficial da União
+- [x] v0.2 — INMET (estações + observacional com token) e Boletim Focus
+- [ ] DOU: busca no Diário Oficial da União (aguardando API pública estável)
 - [ ] TSE: resultados eleitorais
 - [ ] Publicação no PyPI (`uvx mcp-brasil`)
 - [ ] Transporte streamable-http opcional

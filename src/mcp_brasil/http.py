@@ -1,5 +1,6 @@
 import asyncio
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
@@ -40,17 +41,26 @@ def cache_key(url: str, params: dict[str, Any] | None) -> str:
     return f"{url}?{query}"
 
 
+def _query_string(params: dict[str, Any]) -> str:
+    return "&".join(
+        f"{k}={quote(str(v), safe='')}"
+        for k, v in sorted(params.items())
+        if v is not None
+    )
+
+
 async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
     key = cache_key(url, params)
     cached = _cache.get(key)
     if cached is not None:
         return cached
 
+    request_url = f"{url}?{_query_string(params)}" if params else url
     client = await get_client()
     last_error: Exception | None = None
     for attempt in range(2):
         try:
-            response = await client.get(url, params=params)
+            response = await client.get(request_url)
             if response.status_code >= 400:
                 corpo = response.text[:200]
                 raise ApiError(f"HTTP {response.status_code} ao consultar {url}: {corpo}")
