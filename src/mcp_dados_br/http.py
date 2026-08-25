@@ -4,9 +4,9 @@ from urllib.parse import quote
 
 import httpx
 
-from mcp_brasil.cache import TTLCache
+from mcp_dados_br.cache import TTLCache
 
-_USER_AGENT = "mcp-brasil/0.1 (+https://github.com/lucianoon/mcp-brasil)"
+_USER_AGENT = "mcp-dados-br/0.1 (+https://github.com/lucianoon/mcp-dados-br)"
 _TIMEOUT = httpx.Timeout(15.0, connect=5.0)
 
 _cache = TTLCache(ttl_seconds=600.0)

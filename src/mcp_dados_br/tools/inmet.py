@@ -2,7 +2,7 @@ import os
 from datetime import date, timedelta
 from typing import Any
 
-from mcp_brasil.http import get_json
+from mcp_dados_br.http import get_json
 
 _INMET_URL = "https://apitempo.inmet.gov.br"
 

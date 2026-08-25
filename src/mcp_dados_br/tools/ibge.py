@@ -1,6 +1,6 @@
 from typing import Any
 
-from mcp_brasil.http import get_json
+from mcp_dados_br.http import get_json
 
 _SIDRA_URL = "https://servicodados.ibge.gov.br/api/v3/agregados"
 _LOCALIDADES_URL = "https://servicodados.ibge.gov.br/api/v1/localidades"

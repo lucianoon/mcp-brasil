@@ -2,7 +2,7 @@ import httpx
 import pytest
 import respx
 
-from mcp_brasil.tools import ibge
+from mcp_dados_br.tools import ibge
 
 SIDRA_URL = "https://servicodados.ibge.gov.br/api/v3/agregados/4709/periodos/2022/variaveis/93"
 

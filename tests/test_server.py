@@ -1,6 +1,6 @@
 import asyncio
 
-from mcp_brasil.server import create_server
+from mcp_dados_br.server import create_server
 
 NOMES_ESPERADOS = {
     "ibge_populacao",

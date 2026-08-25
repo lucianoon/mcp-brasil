@@ -4,7 +4,7 @@ import httpx
 import pytest
 import respx
 
-from mcp_brasil.tools import inmet
+from mcp_dados_br.tools import inmet
 
 ESTACOES = [
     {

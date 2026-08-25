@@ -1,7 +1,7 @@
 import httpx
 import respx
 
-from mcp_brasil.tools import camara
+from mcp_dados_br.tools import camara
 
 BASE = "https://dadosabertos.camara.leg.br/api/v2"
 

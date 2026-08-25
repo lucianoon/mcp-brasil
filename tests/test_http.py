@@ -2,7 +2,7 @@ import httpx
 import pytest
 import respx
 
-from mcp_brasil.http import ApiError, cache_key, get_json
+from mcp_dados_br.http import ApiError, cache_key, get_json
 
 
 @respx.mock

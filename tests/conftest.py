@@ -1,6 +1,6 @@
 import pytest
 
-from mcp_brasil.http import reset_cache
+from mcp_dados_br.http import reset_cache
 
 
 @pytest.fixture(autouse=True)

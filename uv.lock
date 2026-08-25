@@ -515,8 +515,8 @@ wheels = [
 ]
 
 [[package]]
-name = "mcp-brasil"
-version = "0.2.0"
+name = "mcp-dados-br"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },

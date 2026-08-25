@@ -1,4 +1,4 @@
-# mcp-brasil
+# mcp-dados-br
 
 Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros como ferramentas para assistentes de IA: [Claude Desktop](https://claude.ai/download), Claude Code, Cursor e qualquer cliente MCP.
 
@@ -19,8 +19,8 @@ exceto os dados horários do INMET (veja abaixo).
 Requisitos: [uv](https://docs.astral.sh/uv/) (ou Python 3.12+ com pip).
 
 ```bash
-git clone https://github.com/lucianoon/mcp-brasil
-cd mcp-brasil
+git clone https://github.com/lucianoon/mcp-dados-br
+cd mcp-dados-br
 uv sync
 ```
 
@@ -33,9 +33,9 @@ Adicione ao arquivo de configuração (`claude_desktop_config.json` ou `mcp.json
 ```json
 {
   "mcpServers": {
-    "mcp-brasil": {
+    "mcp-dados-br": {
       "command": "uv",
-      "args": ["run", "--directory", "/caminho/para/mcp-brasil", "mcp-brasil"]
+      "args": ["run", "--directory", "/caminho/para/mcp-dados-br", "mcp-dados-br"]
     }
   }
 }
@@ -44,7 +44,7 @@ Adicione ao arquivo de configuração (`claude_desktop_config.json` ou `mcp.json
 ### Claude Code
 
 ```bash
-claude mcp add mcp-brasil -- uv run --directory /caminho/para/mcp-brasil mcp-brasil
+claude mcp add mcp-dados-br -- uv run --directory /caminho/para/mcp-dados-br mcp-dados-br
 ```
 
 ## Token opcional do INMET
@@ -57,9 +57,9 @@ ambiente no cliente MCP:
 ```json
 {
   "mcpServers": {
-    "mcp-brasil": {
+    "mcp-dados-br": {
       "command": "uv",
-      "args": ["run", "--directory", "/caminho/para/mcp-brasil", "mcp-brasil"],
+      "args": ["run", "--directory", "/caminho/para/mcp-dados-br", "mcp-dados-br"],
       "env": { "INMET_TOKEN": "seu-token" }
     }
   }
@@ -92,7 +92,7 @@ uv run mypy src
 ### Arquitetura
 
 ```
-src/mcp_brasil/
+src/mcp_dados_br/
 ├── server.py        # Servidor MCP e registro das tools
 ├── http.py          # Cliente HTTP compartilhado, retry e tratamento de erros
 ├── cache.py         # Cache TTL em memória para as respostas das APIs
@@ -113,7 +113,7 @@ src/mcp_brasil/
 - [x] v0.2 — INMET (estações + observacional com token) e Boletim Focus
 - [ ] DOU: busca no Diário Oficial da União (aguardando API pública estável)
 - [ ] TSE: resultados eleitorais
-- [ ] Publicação no PyPI (`uvx mcp-brasil`)
+- [ ] Publicação no PyPI (`uvx mcp-dados-br`)
 - [ ] Transporte streamable-http opcional
 
 ## Licença

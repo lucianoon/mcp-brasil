@@ -1,6 +1,6 @@
 import time
 
-from mcp_brasil.cache import TTLCache
+from mcp_dados_br.cache import TTLCache
 
 
 def test_guarda_e_recupera_valor() -> None:
@@ -15,7 +15,7 @@ def test_chave_inexistente_retorna_none() -> None:
 
 
 def test_expira_apos_ttl(monkeypatch: object) -> None:
-    import mcp_brasil.cache as modulo
+    import mcp_dados_br.cache as modulo
 
     cache: TTLCache = TTLCache(ttl_seconds=10.0)
     agora = time.monotonic()

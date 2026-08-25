@@ -4,7 +4,7 @@ import httpx
 import pytest
 import respx
 
-from mcp_brasil.tools import bcb
+from mcp_dados_br.tools import bcb
 
 FOCUS_URL = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata"
 

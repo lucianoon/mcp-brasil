@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from typing import Any
 
-from mcp_brasil.http import get_json
+from mcp_dados_br.http import get_json
 
 _SGS_URL = "https://api.bcb.gov.br/dados/serie"
 _OLINDA_URL = "https://olinda.bcb.gov.br/olinda/servico"

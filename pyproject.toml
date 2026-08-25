@@ -1,5 +1,5 @@
 [project]
-name = "mcp-brasil"
+name = "mcp-dados-br"
 version = "0.2.1"
 description = "Servidor MCP com dados públicos brasileiros: IBGE, Banco Central e Câmara dos Deputados"
 readme = "README.md"
@@ -20,10 +20,10 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/lucianoon/mcp-brasil"
+Repository = "https://github.com/lucianoon/mcp-dados-br"
 
 [project.scripts]
-mcp-brasil = "mcp_brasil.server:main"
+mcp-dados-br = "mcp_dados_br.server:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -55,4 +55,4 @@ python_version = "3.12"
 strict = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mcp_brasil"]
+packages = ["src/mcp_dados_br"]

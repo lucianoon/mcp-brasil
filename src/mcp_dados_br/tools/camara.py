@@ -1,6 +1,6 @@
 from typing import Any
 
-from mcp_brasil.http import get_json
+from mcp_dados_br.http import get_json
 
 _BASE_URL = "https://dadosabertos.camara.leg.br/api/v2"
 

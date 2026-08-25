@@ -2,7 +2,7 @@ from collections.abc import Awaitable, Callable
 
 from mcp.server import MCPServer
 
-from mcp_brasil.tools import bcb, camara, ibge, inmet
+from mcp_dados_br.tools import bcb, camara, ibge, inmet
 
 _INSTRUCTIONS = """\
 Servidor de dados públicos brasileiros. Use as ferramentas para responder
@@ -15,7 +15,7 @@ uso. Prefira sempre as ferramentas específicas antes da genérica ibge_sidra.
 
 
 def create_server() -> MCPServer:
-    mcp = MCPServer("mcp-brasil", instructions=_INSTRUCTIONS)
+    mcp = MCPServer("mcp-dados-br", instructions=_INSTRUCTIONS)
     tools: list[Callable[..., Awaitable[str]]] = [
         ibge.ibge_populacao,
         ibge.ibge_pib,
