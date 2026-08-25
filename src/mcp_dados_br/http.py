@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from typing import Any
 from urllib.parse import quote
 
@@ -53,6 +54,13 @@ def _query_string(params: dict[str, Any]) -> str:
     )
 
 
+def _redigir(url: str) -> str:
+    token_inmet = os.environ.get("INMET_TOKEN")
+    if token_inmet:
+        url = url.replace(token_inmet, "***")
+    return url
+
+
 async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
     key = cache_key(url, params)
     cached = _cache.get(key)
@@ -60,7 +68,7 @@ async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
         return cached
 
     request_url = f"{url}?{_query_string(params)}" if params else url
-    logger.debug("GET %s", request_url)
+    logger.debug("GET %s", _redigir(request_url))
     client = await get_client()
     last_error: Exception | None = None
     for attempt in range(len(_RETRYS_DELAY) + 1):
@@ -68,19 +76,21 @@ async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
             response = await client.get(request_url)
             if response.status_code >= 400:
                 corpo = response.text[:200]
-                raise ApiError(f"HTTP {response.status_code} ao consultar {url}: {corpo}")
+                raise ApiError(
+                    f"HTTP {response.status_code} ao consultar {_redigir(url)}: {corpo}"
+                )
             try:
                 data: Any = response.json()
             except ValueError as exc:
-                raise ApiError(f"Resposta não-JSON de {url}: {exc}") from exc
+                raise ApiError(f"Resposta não-JSON de {_redigir(url)}: {exc}") from exc
             _cache.set(key, data)
             return data
         except httpx.TransportError as exc:
             last_error = exc
-            logger.warning("Tentativa %d falhou para %s: %r", attempt + 1, url, exc)
+            logger.warning("Tentativa %d falhou para %s: %r", attempt + 1, _redigir(url), exc)
             if attempt < len(_RETRYS_DELAY):
                 await asyncio.sleep(_RETRYS_DELAY[attempt])
-    raise ApiError(f"Falha ao consultar {url}: {last_error}") from last_error
+    raise ApiError(f"Falha ao consultar {_redigir(url)}: {last_error}") from last_error
 
 
 async def aclose() -> None:

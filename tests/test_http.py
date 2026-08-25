@@ -30,6 +30,34 @@ async def test_get_json_registra_aviso_no_retry(caplog: pytest.LogCaptureFixture
 
 
 @respx.mock
+async def test_token_inmet_nao_vaza_em_logs_nem_erros(
+    caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("INMET_TOKEN", "segredo-ultra")
+    respx.get(
+        "https://apitempo.inmet.gov.br/token/estacao/2026-01-01/2026-01-02/A001/segredo-ultra"
+    ).mock(return_value=httpx.Response(400, json={}))
+
+    with pytest.raises(ApiError) as excinfo:
+        await get_json(
+            "https://apitempo.inmet.gov.br/token/estacao/2026-01-01/2026-01-02/A001/segredo-ultra"
+        )
+    assert "segredo-ultra" not in str(excinfo.value)
+    assert "***" in str(excinfo.value)
+
+    monkeypatch.setenv("INMET_TOKEN", "outro-segredo")
+    respx.get(
+        "https://apitempo.inmet.gov.br/token/estacao/2026-01-01/2026-01-02/A001/outro-segredo"
+    ).mock(side_effect=httpx.ConnectError("sem conexão"))
+    with caplog.at_level("DEBUG", logger="mcp_dados_br.http"), pytest.raises(ApiError):
+        await get_json(
+            "https://apitempo.inmet.gov.br/token/estacao/2026-01-01/2026-01-02/A001/outro-segredo"
+        )
+    for registro in caplog.records:
+        assert "outro-segredo" not in registro.getMessage()
+
+
+@respx.mock
 async def test_get_json_usa_cache_na_segunda_chamada() -> None:
     route = respx.get("https://api.exemplo.test/dados").mock(
         return_value=httpx.Response(200, json={"n": 42})
