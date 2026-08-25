@@ -1,10 +1,46 @@
 # mcp-dados-br
 
 [![CI](https://github.com/lucianoon/mcp-dados-br/actions/workflows/ci.yml/badge.svg)](https://github.com/lucianoon/mcp-dados-br/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/mcp-dados-br?color=2e7d32&label=PyPI)](https://pypi.org/project/mcp-dados-br/)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org)
 [![Licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-green.svg)](LICENSE)
 
 Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros como ferramentas para assistentes de IA: [Claude Desktop](https://claude.ai/download), Claude Code, Cursor e qualquer cliente MCP.
+
+## Instalação
+
+A forma mais simples, sem instalar nada permanentemente:
+
+```bash
+uvx mcp-dados-br
+```
+
+Configuração no Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "dados-brasil": {
+      "command": "uvx",
+      "args": ["mcp-dados-br"]
+    }
+  }
+}
+```
+
+Ou no Claude Code:
+
+```bash
+claude mcp add dados-brasil -- uvx mcp-dados-br
+```
+
+### A partir do código-fonte
+
+```bash
+git clone https://github.com/lucianoon/mcp-dados-br
+cd mcp-dados-br
+uv sync
+```
 
 ## Ferramentas disponíveis
 
@@ -18,16 +54,6 @@ Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros
 
 Todas as fontes são APIs oficiais abertas — nenhuma chave de API necessária,
 exceto os dados horários do INMET (veja abaixo).
-
-## Instalação
-
-Requisitos: [uv](https://docs.astral.sh/uv/) (ou Python 3.12+ com pip).
-
-```bash
-git clone https://github.com/lucianoon/mcp-dados-br
-cd mcp-dados-br
-uv sync
-```
 
 ## Configuração
 
