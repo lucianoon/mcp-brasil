@@ -1,12 +1,12 @@
 [project]
 name = "mcp-dados-br"
 version = "0.5.2"
-description = "Servidor MCP com dados públicos brasileiros: IBGE, Banco Central e Câmara dos Deputados"
+description = "Servidor MCP com dados públicos brasileiros: IBGE, Banco Central, INMET, Câmara dos Deputados e Senado Federal"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 authors = [{ name = "Luciano" }]
-keywords = ["mcp", "dados-abertos", "ibge", "banco-central", "camara"]
+keywords = ["mcp", "dados-abertos", "ibge", "banco-central", "inmet", "camara", "senado", "brasil"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
