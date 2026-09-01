@@ -109,6 +109,39 @@ async def test_get_json_esgota_tentativas() -> None:
     assert route.call_count == 3
 
 
+@respx.mock
+async def test_get_json_tenta_novamente_apos_5xx_do_upstream() -> None:
+    route = respx.get("https://api.exemplo.test/instavel").mock(
+        side_effect=[
+            httpx.Response(504, text="upstream request timeout"),
+            httpx.Response(200, json={"tentativa": 2}),
+        ]
+    )
+    resultado = await get_json("https://api.exemplo.test/instavel")
+    assert resultado == {"tentativa": 2}
+    assert route.call_count == 2
+
+
+@respx.mock
+async def test_get_json_5xx_persistente_levanta_apierror_com_status() -> None:
+    route = respx.get("https://api.exemplo.test/caido").mock(
+        return_value=httpx.Response(503, text="indisponível")
+    )
+    with pytest.raises(ApiError, match="HTTP 503"):
+        await get_json("https://api.exemplo.test/caido")
+    assert route.call_count == 3
+
+
+@respx.mock
+async def test_get_json_nao_repete_em_4xx() -> None:
+    route = respx.get("https://api.exemplo.test/nao-existe").mock(
+        return_value=httpx.Response(404, json={"erro": "não encontrado"})
+    )
+    with pytest.raises(ApiError, match="HTTP 404"):
+        await get_json("https://api.exemplo.test/nao-existe")
+    assert route.call_count == 1
+
+
 def test_cache_key_com_params_ordenados() -> None:
     chave = cache_key("https://x.test/api", {"b": "2", "a": "1"})
     assert chave == "https://x.test/api?a=1&b=2"

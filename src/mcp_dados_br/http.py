@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 _USER_AGENT = "mcp-dados-br/0.1 (+https://github.com/lucianoon/mcp-dados-br)"
 _TIMEOUT = httpx.Timeout(30.0, connect=5.0)
 _RETRYS_DELAY = [0.5, 1.5]
+# Códigos em que vale repetir: limite de taxa e falhas transitórias do upstream
+# (o 504 da Câmara derrubou a suíte de integração em 31/08/2026).
+_STATUS_RETRY = {429, 502, 503, 504}
 
 _cache = TTLCache(ttl_seconds=600.0)
 _client: httpx.AsyncClient | None = None
@@ -74,6 +77,15 @@ async def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
     for attempt in range(len(_RETRYS_DELAY) + 1):
         try:
             response = await client.get(request_url)
+            if response.status_code in _STATUS_RETRY and attempt < len(_RETRYS_DELAY):
+                logger.warning(
+                    "Tentativa %d falhou para %s: HTTP %d",
+                    attempt + 1,
+                    _redigir(url),
+                    response.status_code,
+                )
+                await asyncio.sleep(_RETRYS_DELAY[attempt])
+                continue
             if response.status_code >= 400:
                 corpo = response.text[:200]
                 raise ApiError(

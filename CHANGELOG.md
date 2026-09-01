@@ -5,9 +5,30 @@ e versionamento semântico.
 
 ## [Não lançado]
 
+### Adicionado
+
+- `SECURITY.md` com política de reporte e escopo sensível
+- Dependabot também para as dependências Python (grupo mensal de minor/patch)
+- Job de CI que constrói a imagem Docker, sobe o transporte `streamable-http`
+  e confirma que o processo atende HTTP sem rodar como root
+- README em inglês (`README.en.md`)
+
+### Alterado
+
+- O cliente HTTP repete a chamada em `429`, `502`, `503` e `504`, com o mesmo
+  backoff usado para falhas de rede. Antes qualquer 5xx transitório do upstream
+  virava erro imediato (foi o caso do 504 da Câmara em 31/08/2026)
+- CI sincroniza com `--locked`, falhando se o `uv.lock` estiver desatualizado
+- Imagem Docker executa como usuário sem privilégios
+
+### Corrigido
+
+- A imagem Docker escutava só em `127.0.0.1`, então `docker run -p 8000:8000`
+  nunca respondia. Novo `MCP_HOST` (padrão `127.0.0.1`; a imagem define
+  `0.0.0.0`). Encontrado pelo smoke novo do CI
+
 ### Planejado
 
-- Publicação no PyPI (`uvx mcp-dados-br`)
 - Busca no Diário Oficial da União (aguardando API pública estável)
 - Resultados eleitorais do TSE
 

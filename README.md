@@ -112,7 +112,9 @@ MCP_TRANSPORTE=streamable-http MCP_PORTA=8000 mcp-dados-br
 ```
 
 Aponte clientes para `http://localhost:8000/mcp`. Útil para Docker ou
-compartilhar o servidor na rede local.
+compartilhar o servidor na rede local. Por padrão o servidor escuta só em
+`127.0.0.1`; defina `MCP_HOST=0.0.0.0` para aceitar conexões de outras máquinas
+(a imagem Docker já faz isso).
 
 ### Docker
 
