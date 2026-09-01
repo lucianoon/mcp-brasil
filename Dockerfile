@@ -15,4 +15,6 @@ ENV MCP_TRANSPORTE=streamable-http
 ENV MCP_PORTA=8000
 EXPOSE 8000
 
-CMD ["uv", "run", "--no-sync", "mcp-dados-br"]
+# Entrypoint direto do venv: `uv run` tentaria criar cache em $HOME, que o
+# usuário sem privilégios não tem.
+CMD ["/app/.venv/bin/mcp-dados-br"]
