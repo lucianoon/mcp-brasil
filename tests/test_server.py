@@ -58,7 +58,9 @@ def test_main_streamable_http_respeita_host_e_porta(monkeypatch: pytest.MonkeyPa
     assert falso.chamadas == [{"transport": "streamable-http", "host": "0.0.0.0", "port": 9000}]
 
 
-def test_main_streamable_http_escuta_apenas_local_por_padrao(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_streamable_http_escuta_apenas_local_por_padrao(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     falso = _ServidorFalso()
     monkeypatch.setattr(modulo_server, "create_server", lambda: falso)
     monkeypatch.setenv("MCP_TRANSPORTE", "streamable-http")
