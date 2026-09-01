@@ -15,8 +15,8 @@ classifiers = [
 ]
 dependencies = [
     "httpx>=0.28",
-    "mcp>=1.12",
-    "pydantic>=2.10",
+    "mcp>=2.1.1",
+    "pydantic>=2.13.5",
 ]
 
 [project.urls]
@@ -34,7 +34,7 @@ dev = [
     "pytest>=8.3",
     "pytest-asyncio>=0.25",
     "respx>=0.22",
-    "ruff>=0.9",
+    "ruff>=0.16.5",
     "mypy>=1.14",
 ]
 
