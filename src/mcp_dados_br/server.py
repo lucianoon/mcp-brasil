@@ -60,8 +60,11 @@ def main() -> None:
     servidor = create_server()
     transporte = os.environ.get("MCP_TRANSPORTE", "stdio")
     if transporte == "streamable-http":
+        # Padrão do SDK é 127.0.0.1, correto para uso local. Em container é
+        # preciso escutar em 0.0.0.0 para a porta publicada responder.
+        host = os.environ.get("MCP_HOST", "127.0.0.1")
         porta = int(os.environ.get("MCP_PORTA", "8000"))
-        servidor.run(transport="streamable-http", port=porta)
+        servidor.run(transport="streamable-http", host=host, port=porta)
     else:
         servidor.run()
 

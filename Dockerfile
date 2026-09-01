@@ -12,6 +12,7 @@ RUN useradd --system --uid 1000 --no-create-home mcp && chown -R mcp:mcp /app
 USER mcp
 
 ENV MCP_TRANSPORTE=streamable-http
+ENV MCP_HOST=0.0.0.0
 ENV MCP_PORTA=8000
 EXPOSE 8000
 

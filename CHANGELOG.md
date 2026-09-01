@@ -21,6 +21,12 @@ e versionamento semântico.
 - CI sincroniza com `--locked`, falhando se o `uv.lock` estiver desatualizado
 - Imagem Docker executa como usuário sem privilégios
 
+### Corrigido
+
+- A imagem Docker escutava só em `127.0.0.1`, então `docker run -p 8000:8000`
+  nunca respondia. Novo `MCP_HOST` (padrão `127.0.0.1`; a imagem define
+  `0.0.0.0`). Encontrado pelo smoke novo do CI
+
 ### Planejado
 
 - Busca no Diário Oficial da União (aguardando API pública estável)

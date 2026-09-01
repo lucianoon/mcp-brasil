@@ -110,7 +110,9 @@ MCP_TRANSPORTE=streamable-http MCP_PORTA=8000 mcp-dados-br
 ```
 
 Point clients at `http://localhost:8000/mcp`. Handy for Docker or for sharing the server
-on a local network.
+on a local network. By default the server listens on `127.0.0.1` only; set
+`MCP_HOST=0.0.0.0` to accept connections from other machines (the Docker image
+already does).
 
 ### Docker
 
