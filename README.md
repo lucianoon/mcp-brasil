@@ -5,6 +5,8 @@
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org)
 [![Licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-green.svg)](LICENSE)
 
+*[English version](README.en.md)*
+
 Servidor **MCP (Model Context Protocol)** que expõe dados públicos brasileiros como ferramentas para assistentes de IA: [Claude Desktop](https://claude.ai/download), Claude Code, Cursor e qualquer cliente MCP.
 
 <!-- mcp-name: io.github.lucianoon/mcp-dados-br -->
@@ -99,7 +101,7 @@ ambiente no cliente MCP:
 }
 ```
 
-Sem o token, as demais 14 ferramentas funcionam normalmente.
+Sem o token, as demais 18 ferramentas funcionam normalmente.
 
 ## Transporte streamable-http
 
@@ -172,7 +174,7 @@ src/mcp_dados_br/
 - [x] v0.2 — INMET (estações + observacional com token) e Boletim Focus
 - [x] v0.3 — Agenda da Câmara, transporte streamable-http e testes de integração agendados no CI
 - [x] v0.4 — Tramitações, atalhos nomeados no SGS, imagem Docker
-- [ ] Publicação no PyPI (`uvx mcp-dados-br`)
+- [x] v0.5 — Publicação no PyPI (`uvx mcp-dados-br`), MCP Registry e Smithery
 - [ ] DOU: busca no Diário Oficial da União (aguardando API pública estável)
 - [ ] TSE: resultados eleitorais
 
