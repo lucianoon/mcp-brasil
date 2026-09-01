@@ -24,7 +24,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Sync dependencies
-        run: uv sync --dev
+        run: uv sync --dev --locked
 
       - name: Lint
         run: uv run ruff check .
@@ -49,3 +49,33 @@ jobs:
 
       - name: Testes de integração (APIs reais)
         run: uv run pytest -m integration -q
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build image
+        run: docker build --tag mcp-dados-br:ci .
+
+      # A imagem sobe em streamable-http por padrão. O smoke confirma que o
+      # processo atende HTTP na porta publicada, sem root, antes de qualquer
+      # cliente MCP conectar.
+      - name: Smoke test HTTP transport
+        run: |
+          docker run --detach --name mcp -p 8000:8000 mcp-dados-br:ci
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/mcp || true)
+            if [ "$code" != "000" ]; then
+              echo "servidor respondeu HTTP $code na tentativa $i"
+              docker exec mcp id -u | grep -qv '^0$' || { echo "container roda como root"; exit 1; }
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs mcp
+          exit 1
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f mcp || true
